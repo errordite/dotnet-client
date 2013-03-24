@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Errordite.Client.Log4net</id>
+    <version>[VERSION_NUMBER]</version>
+    <authors>nick-codetrip,gaz-codetrip</authors>
+    <projectUrl>http://www.errordite.com</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>
+      Errordite.Client.Log4net extends Errordite to enable the capturing of instrumentation sent to Log4net from your web application, this data is sent along with your errors to Errordite.
+    </description>
+	  <summary>
+      Log4net extension for Errordite.
+    </summary>
+    <tags>
+      Exceptions Errors Logging Exception Handling, Log4net, Errordite Error-Management Management Error Exception-Handling
+    </tags>
+    <dependencies>
+      <dependency id="Errordite.Client" version="[VERSION_NUMBER]" />
+    </dependencies>
+  </metadata>
+</package>

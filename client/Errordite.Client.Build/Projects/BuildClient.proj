@@ -1,0 +1,139 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTargets="Package">
+
+  <Import Project="$(MSBuildProjectDirectory)\..\Targets\Versioning.target" />
+
+  <PropertyGroup>
+    <SourcePath>$(MSBuildProjectDirectory)\..\..\..\</SourcePath>
+    <VersionPath>$(SourcePath)</VersionPath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectToBuild Include="$(MSBuildProjectDirectory)\..\..\Errordite.Client.sln"/>
+  </ItemGroup>
+
+  <Target Name="Clean">
+    <MSBuild Projects="@(ProjectToBuild)" Targets="Clean" Properties="Configuration=$(Configuration);Platform=Any Cpu"/>
+  </Target>
+
+  <Target Name="Build" DependsOnTargets="Clean">
+    <Message Text="Build: $(BuildNumber)" />
+    <Message Text="Configuration: $(Configuration)" />
+    <MSBuild Projects="@(ProjectToBuild)" Targets="Build" Properties="Configuration=$(Configuration);Platform=Any Cpu;MvcBuildViews=true"/>
+  </Target>
+
+  <Target Name="Package" DependsOnTargets="ConfigureVersioning;
+          SetAssemblyVersion;
+          Build;
+          ResetAssemblyVersion">
+
+    <CreateProperty Value="$(SourcePath)\builds\$(BuildNumber)">
+      <Output TaskParameter="Value" PropertyName="OutputDir"/>
+    </CreateProperty>
+
+    <CreateProperty Value="$(SourcePath)\builds\debug\$(BuildNumber)" Condition="'$(Configuration)' == 'Debug'">
+      <Output TaskParameter="Value" PropertyName="OutputDir"/>
+    </CreateProperty>
+
+    <Message Text="Making Dir: $(OutputDir)" />
+    <MakeDir Directories="$(OutputDir)" />
+
+    <MakeDir Directories="$(OutputDir)\Errordite.Client" />
+    <MakeDir Directories="$(OutputDir)\Errordite.Client\lib" />
+    <MakeDir Directories="$(OutputDir)\Errordite.Client\content" />
+    <MakeDir Directories="$(OutputDir)\Errordite.Client\lib\net20" />
+    <MakeDir Directories="$(OutputDir)\Errordite.Client\lib\net40" />
+    <MakeDir Directories="$(OutputDir)\Errordite.Client\tools" />
+    <MakeDir Directories="$(OutputDir)\Errordite.Client.Mvc2" />
+    <MakeDir Directories="$(OutputDir)\Errordite.Client.Mvc2\lib" />
+    <MakeDir Directories="$(OutputDir)\Errordite.Client.Mvc2\content" />
+    <MakeDir Directories="$(OutputDir)\Errordite.Client.Mvc2\lib\net40" />
+    <MakeDir Directories="$(OutputDir)\Errordite.Client.Mvc2\tools" />
+    <MakeDir Directories="$(OutputDir)\Errordite.Client.Mvc3" />
+    <MakeDir Directories="$(OutputDir)\Errordite.Client.Mvc3\lib" />
+    <MakeDir Directories="$(OutputDir)\Errordite.Client.Mvc3\content" />
+    <MakeDir Directories="$(OutputDir)\Errordite.Client.Mvc3\lib\net40" />
+    <MakeDir Directories="$(OutputDir)\Errordite.Client.Mvc3\tools" />
+    <MakeDir Directories="$(OutputDir)\Errordite.Client.Mvc4" />
+    <MakeDir Directories="$(OutputDir)\Errordite.Client.Mvc4\lib" />
+    <MakeDir Directories="$(OutputDir)\Errordite.Client.Mvc4\content" />
+    <MakeDir Directories="$(OutputDir)\Errordite.Client.Mvc4\lib\net40" />
+    <MakeDir Directories="$(OutputDir)\Errordite.Client.Mvc4\tools" />
+    <MakeDir Directories="$(OutputDir)\Errordite.Client.Log4net" />
+    <MakeDir Directories="$(OutputDir)\Errordite.Client.Log4net\lib" />
+    <MakeDir Directories="$(OutputDir)\Errordite.Client.Log4net\content" />
+    <MakeDir Directories="$(OutputDir)\Errordite.Client.Log4net\lib\net40" />
+    <MakeDir Directories="$(OutputDir)\Errordite.Client.Log4net\tools" />
+
+    <Copy SourceFiles="$(SourcePath)\NuGet\Errordite.Client\app.config.transform; $(SourcePath)\NuGet\Errordite.Client\web.config.transform"
+          DestinationFolder="$(OutputDir)\Errordite.Client\content" />
+    <Copy SourceFiles="$(SourcePath)\NuGet\Errordite.Client\Errordite.Client.dll.nuspec"
+          DestinationFolder="$(OutputDir)\Errordite.Client" />
+
+    <Copy SourceFiles="$(SourcePath)\NuGet\Errordite.Client.Mvc2\web.config.transform"
+          DestinationFolder="$(OutputDir)\Errordite.Client.Mvc2\content" />
+    <Copy SourceFiles="$(SourcePath)\NuGet\Errordite.Client.Mvc2\Errordite.Client.Mvc2.dll.nuspec"
+          DestinationFolder="$(OutputDir)\Errordite.Client.Mvc2" />
+
+    <Copy SourceFiles="$(SourcePath)\NuGet\Errordite.Client.Mvc3\web.config.transform"
+          DestinationFolder="$(OutputDir)\Errordite.Client.Mvc3\content" />
+    <Copy SourceFiles="$(SourcePath)\NuGet\Errordite.Client.Mvc3\Errordite.Client.Mvc3.dll.nuspec"
+          DestinationFolder="$(OutputDir)\Errordite.Client.Mvc3" />
+
+    <Copy SourceFiles="$(SourcePath)\NuGet\Errordite.Client.Mvc4\web.config.transform"
+            DestinationFolder="$(OutputDir)\Errordite.Client.Mvc4\content" />
+    <Copy SourceFiles="$(SourcePath)\NuGet\Errordite.Client.Mvc4\Errordite.Client.Mvc4.dll.nuspec"
+            DestinationFolder="$(OutputDir)\Errordite.Client.Mvc4" />
+
+    <Copy SourceFiles="$(SourcePath)\NuGet\Errordite.Client.Log4net\web.config.transform"
+            DestinationFolder="$(OutputDir)\Errordite.Client.Log4net\content" />
+    <Copy SourceFiles="$(SourcePath)\NuGet\Errordite.Client.Log4net\Errordite.Client.Log4net.dll.nuspec"
+            DestinationFolder="$(OutputDir)\Errordite.Client.Log4net" />
+
+    <Copy SourceFiles="$(SourcePath)\NuGet\tools\install.ps1"
+          DestinationFolder="$(OutputDir)\Errordite.Client\tools"/>
+    <Copy SourceFiles="$(SourcePath)\NuGet\tools\install.ps1"
+          DestinationFolder="$(OutputDir)\Errordite.Client.Mvc2\tools"/>
+    <Copy SourceFiles="$(SourcePath)\NuGet\tools\install.ps1"
+          DestinationFolder="$(OutputDir)\Errordite.Client.Mvc3\tools"/>
+    <Copy SourceFiles="$(SourcePath)\NuGet\tools\install.ps1"
+          DestinationFolder="$(OutputDir)\Errordite.Client.Mvc4\tools"/>
+    <Copy SourceFiles="$(SourcePath)\NuGet\tools\install.ps1"
+          DestinationFolder="$(OutputDir)\Errordite.Client.Log4net\tools"/>
+
+    <Copy SourceFiles="$(SourcePath)\client\Errordite.Client\bin\$(Configuration)\Errordite.Client.dll;
+					             $(SourcePath)\client\Errordite.Client\bin\$(Configuration)\Errordite.Client.pdb"
+          DestinationFolder="$(OutputDir)\Errordite.Client\lib\net40" />
+    
+    <Copy SourceFiles="$(SourcePath)\client\Errordite.Client\bin\$(Configuration)\Errordite.Client.2.0.dll"
+          DestinationFiles="$(OutputDir)\Errordite.Client\lib\net20\Errordite.Client.dll" />
+    <Copy SourceFiles="$(SourcePath)\client\Errordite.Client\bin\$(Configuration)\Errordite.Client.2.0.pdb"
+          DestinationFiles="$(OutputDir)\Errordite.Client\lib\net20\Errordite.Client.pdb" />
+    
+    <Copy SourceFiles="$(SourcePath)\client\Errordite.Client.Mvc2\bin\$(Configuration)\Errordite.Client.Mvc2.dll;
+					             $(SourcePath)\client\Errordite.Client.Mvc2\bin\$(Configuration)\Errordite.Client.Mvc2.pdb"
+          DestinationFolder="$(OutputDir)\Errordite.Client.Mvc2\lib\net40" />
+    
+    <Copy SourceFiles="$(SourcePath)\client\Errordite.Client.Mvc\bin\$(Configuration)\Errordite.Client.Mvc3.dll;
+					             $(SourcePath)\client\Errordite.Client.Mvc\bin\$(Configuration)\Errordite.Client.Mvc3.pdb"
+          DestinationFolder="$(OutputDir)\Errordite.Client.Mvc3\lib\net40" />
+    
+    <Copy SourceFiles="$(SourcePath)\client\Errordite.Client.Mvc\bin\$(Configuration)\Errordite.Client.Mvc4.dll;
+					             $(SourcePath)\client\Errordite.Client.Mvc\bin\$(Configuration)\Errordite.Client.Mvc4.pdb"
+          DestinationFolder="$(OutputDir)\Errordite.Client.Mvc4\lib\net40" />
+
+    <Copy SourceFiles="$(SourcePath)\client\Errordite.Client.Log4net\bin\$(Configuration)\Errordite.Client.Log4net.dll;
+					             $(SourcePath)\client\Errordite.Client.Log4net\bin\$(Configuration)\Errordite.Client.Log4net.pdb"
+          DestinationFolder="$(OutputDir)\Errordite.Client.Log4net\lib\net40" />
+
+    <FileUpdate Files="$(OutputDir)\Errordite.Client\Errordite.Client.dll.nuspec" Regex="\[VERSION_NUMBER\]" ReplacementText="$(BuildNumber)" />
+    <FileUpdate Files="$(OutputDir)\Errordite.Client.Mvc2\Errordite.Client.Mvc2.dll.nuspec" Regex="\[VERSION_NUMBER\]" ReplacementText="$(BuildNumber)" />
+    <FileUpdate Files="$(OutputDir)\Errordite.Client.Mvc3\Errordite.Client.Mvc3.dll.nuspec" Regex="\[VERSION_NUMBER\]" ReplacementText="$(BuildNumber)" />
+    <FileUpdate Files="$(OutputDir)\Errordite.Client.Mvc4\Errordite.Client.Mvc4.dll.nuspec" Regex="\[VERSION_NUMBER\]" ReplacementText="$(BuildNumber)" />
+    <FileUpdate Files="$(OutputDir)\Errordite.Client.Log4net\Errordite.Client.Log4net.dll.nuspec" Regex="\[VERSION_NUMBER\]" ReplacementText="$(BuildNumber)" />
+
+    <Exec Command="$(SourcePath)\client\Errordite.Client.Build\Cmd\GenerateNugetPackages.cmd $(OutputDir)"
+          WorkingDirectory="$(SourcePath)" />
+
+  </Target>
+</Project>
+

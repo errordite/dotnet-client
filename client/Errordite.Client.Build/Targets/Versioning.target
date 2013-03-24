@@ -1,0 +1,99 @@
+<Project
+	xmlns="http://schemas.microsoft.com/developer/msbuild/2003"
+	ToolsVersion="4.0"
+	DefaultTargets="Main">
+  
+  <UsingTask AssemblyFile="$(MSBuildProjectDirectory)\..\Tasks\MSBuild.Community.Tasks.dll" TaskName="MSBuild.Community.Tasks.Version" />
+  <UsingTask AssemblyFile="$(MSBuildProjectDirectory)\..\Tasks\MSBuild.Community.Tasks.dll" TaskName="MSBuild.Community.Tasks.FileUpdate" />
+
+  <Target Name="IncrementRevisionNumber" Condition="$(Increment) == 'revision'" >
+    <Version VersionFile="$(VersionPath)\version.txt" BuildType="None" MinorType="None" MajorType="None" RevisionType="Increment">
+      <Output TaskParameter="Major" PropertyName="Major" />
+      <Output TaskParameter="Minor" PropertyName="Minor" />
+      <Output TaskParameter="Build" PropertyName="Build" />
+      <Output TaskParameter="Revision" PropertyName="Revision" />
+    </Version>
+  </Target>
+
+  <Target Name="IncrementBuildNumber" Condition="$(Increment) == 'build'" >
+    <Version VersionFile="$(VersionPath)\version.txt" BuildType="Increment" MinorType="None" MajorType="None" RevisionType="Reset">
+      <Output TaskParameter="Major" PropertyName="Major" />
+      <Output TaskParameter="Minor" PropertyName="Minor" />
+      <Output TaskParameter="Build" PropertyName="Build" />
+      <Output TaskParameter="Revision" PropertyName="Revision" />
+    </Version>
+  </Target>
+
+  <Target Name="IncrementMinorNumber" Condition="$(Increment) == 'minor'" >
+    <Version VersionFile="$(VersionPath)\version.txt" BuildType="Increment" MinorType="Increment" MajorType="None" RevisionType="Reset">
+      <Output TaskParameter="Major" PropertyName="Major" />
+      <Output TaskParameter="Minor" PropertyName="Minor" />
+      <Output TaskParameter="Build" PropertyName="Build" />
+      <Output TaskParameter="Revision" PropertyName="Revision" />
+    </Version>
+  </Target>
+
+  <Target Name="IncrementMajorNumber" Condition="$(Increment) == 'major'">
+    <Version VersionFile="$(VersionPath)\version.txt" BuildType="Increment" MinorType="Reset" MajorType="Increment" RevisionType="None">
+      <Output TaskParameter="Major" PropertyName="Major" />
+      <Output TaskParameter="Minor" PropertyName="Minor" />
+      <Output TaskParameter="Build" PropertyName="Build" />
+      <Output TaskParameter="Revision" PropertyName="Revision" />
+    </Version>
+  </Target>
+
+  <Target Name="IncrementMajorNumber" Condition="$(Increment) == 'none'">
+    <Version VersionFile="$(VersionPath)\version.txt" BuildType="None" MinorType="None" MajorType="None" RevisionType="None">
+      <Output TaskParameter="Major" PropertyName="Major" />
+      <Output TaskParameter="Minor" PropertyName="Minor" />
+      <Output TaskParameter="Build" PropertyName="Build" />
+      <Output TaskParameter="Revision" PropertyName="Revision" />
+    </Version>
+  </Target>
+
+  <Target Name="InitializeVersioning">
+    <MakeDir Directories="$(VersionPath)" Condition="!Exists('$(VersionPath)')" />
+
+    <!--Create a new version file if it does not exist-->
+    <WriteLinesToFile File="$(VersionPath)\version.txt" Lines="0.0.0.0" Overwrite="true" Condition="!Exists('$(VersionPath)\version.txt')" />
+
+  </Target>
+  
+  <Target Name="ConfigureVersioning" 
+          DependsOnTargets="InitializeVersioning;
+                            IncrementMajorNumber;
+                            IncrementMinorNumber;
+                            IncrementBuildNumber;
+                            IncrementRevisionNumber;">    
+
+    <Message Text="Increment = $(Increment)" />
+
+    <CreateProperty Value="$(Major).$(Minor).$(Build).$(Revision)">
+      <Output TaskParameter="Value" PropertyName="BuildNumber" />
+    </CreateProperty>
+
+    <Message Text="Build number set to $(BuildNumber)"/>
+
+    <WriteLinesToFile File="$(VersionPath)\version.txt" Lines="$(BuildNumber)" Overwrite="true"/>
+    
+    <Message Text="BuildNumber = $(BuildNumber)" />
+  </Target>  
+  
+  <Target Name="SetAssemblyVersion">
+    <ItemGroup>
+      <AllAssemblyInfos Include="$(SourcePath)\client\Errordite.Client.Build\Assembly\SharedAssemblyInfo.cs"/>
+    </ItemGroup>
+
+    <FileUpdate Files="@(AllAssemblyInfos)" Regex="AssemblyVersion\(&quot;[^&quot;]*&quot;\)" ReplacementText="AssemblyVersion(&quot;$(Major).$(Minor)&quot;)" />
+    <FileUpdate Files="@(AllAssemblyInfos)" Regex="AssemblyFileVersion\(&quot;[^&quot;]*&quot;\)" ReplacementText="AssemblyFileVersion(&quot;$(Major).$(Minor).$(Build).$(Revision)&quot;)" />
+  </Target>
+
+  <Target Name="ResetAssemblyVersion">
+    <ItemGroup>
+      <AllAssemblyInfos Include="$(SourcePath)\client\Errordite.Client.Build\Assembly\SharedAssemblyInfo.cs"/>
+    </ItemGroup>
+    <FileUpdate Files="@(AllAssemblyInfos)" Regex="AssemblyVersion\(&quot;[^&quot;]*&quot;\)" ReplacementText="AssemblyVersion(&quot;0.0.0.0&quot;)" />
+    <FileUpdate Files="@(AllAssemblyInfos)" Regex="AssemblyFileVersion\(&quot;[^&quot;]*&quot;\)" ReplacementText="AssemblyFileVersion(&quot;dev&quot;)" />
+  </Target>
+</Project>
+

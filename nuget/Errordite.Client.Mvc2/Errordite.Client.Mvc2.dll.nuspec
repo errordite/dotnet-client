@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>Errordite.Client.Mvc2</id>
+    <version>[VERSION_NUMBER]</version>
+    <authors>nick-codetrip,gaz-codetrip</authors>
+    <projectUrl>http://www.errordite.com</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>
+      Errordite receives all your application exceptions and groups together those that are the same - automatically or with rules you define. You then decide how to progress the errors. You can fix them, ignore them, or wait and see how often the error occurs.  This is the MVC2 version.  There is also a general purpose client and an MVC version (supports MVC 3 and MVC 4).
+    </description>
+  	<summary>
+      Client for cloud based exception logging and management.
+    </summary>
+    <tags>
+      Exceptions Errors Logging Exception Handling Error-Management Management Error Exception-Handling
+    </tags>
+    <dependencies>
+      <dependency id="Errordite.Client" version="[VERSION_NUMBER]" />
+    </dependencies>
+  </metadata>
+</package>
