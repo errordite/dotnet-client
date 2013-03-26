@@ -17,6 +17,7 @@
     </tags>
     <dependencies>
       <dependency id="Errordite.Client" version="[VERSION_NUMBER]" />
+      <dependency id="log4net" version="2.0.0" />
     </dependencies>
   </metadata>
 </package>

@@ -14,34 +14,52 @@ namespace Errordite.Client.Log4net
         private bool _running;
         private List<LogMessage> _messages; 
 
-        public static void Initialise(params string[] loggers)
+        public static void Initialise(bool captureRootLoggerOutput, params string[] loggersToCaptureEventsFrom)
         {
-            var attachLoggers = loggers.Select(l => l.ToLowerInvariant()).ToList();
+            var repository = LogManager.GetRepository() as Hierarchy;
 
-            foreach (var log in LogManager.GetCurrentLoggers())
+            if (repository == null)
+                return;
+
+            if (captureRootLoggerOutput)
             {
-                var logger = log.Logger as Logger;
-
-                if (logger != null && attachLoggers.Contains(logger.Name.ToLowerInvariant()))
+                if (repository.Root != null)
                 {
                     var profilingAppender = new ErrorditeAppender
                     {
                         Threshold = Level.Debug,
-                        Name = string.Format("{0}-Errordite", logger.Name)
+                        Name = string.Format("{0}-Errordite", repository.Root.Name)
                     };
 
-                    logger.AddAppender(profilingAppender);
+                    repository.Root.AddAppender(profilingAppender);
                     ProfilingAppenders.Add(profilingAppender);
                 }
             }
 
-            var repository = LogManager.GetRepository() as Hierarchy;
-
-            if (repository != null)
+            if (loggersToCaptureEventsFrom.Length > 0)
             {
-                repository.Configured = true;
-                repository.RaiseConfigurationChanged(EventArgs.Empty);
+                var attachLoggers = loggersToCaptureEventsFrom.Select(l => l.ToLowerInvariant()).ToList();
+
+                foreach (var log in LogManager.GetCurrentLoggers())
+                {
+                    var logger = log.Logger as Logger;
+
+                    if (logger != null && attachLoggers.Contains(logger.Name.ToLowerInvariant()))
+                    {
+                        var profilingAppender = new ErrorditeAppender
+                        {
+                            Threshold = Level.Debug,
+                            Name = string.Format("{0}-Errordite", logger.Name)
+                        };
+
+                        logger.AddAppender(profilingAppender);
+                        ProfilingAppenders.Add(profilingAppender);
+                    }
+                }
             }
+
+            repository.Configured = true;
+            repository.RaiseConfigurationChanged(EventArgs.Empty);
         }
 
         public void Start()
