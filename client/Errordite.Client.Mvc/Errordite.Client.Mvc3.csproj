@@ -8,7 +8,7 @@
     <ProjectGuid>{094DBF13-ABDD-41BD-9F97-91AC4AD1879F}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Errordite.Client.Mvc3</RootNamespace>
+    <RootNamespace>Errordite.Client.Mvc</RootNamespace>
     <AssemblyName>Errordite.Client.Mvc3</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
