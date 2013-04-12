@@ -18,12 +18,14 @@ namespace Errordite.Client
     /// </summary>
     public static class ErrorditeClient
     {
-        public const string ErrorditeLogMessagesHttpContextKey = "errordite-logmessages-httpcontext-key";
         private static Action<Exception> _exceptionNotificationAction = e => System.Diagnostics.Trace.Write(e.ToString());
-        private static readonly Type BaseExceptionType = typeof(Exception);
+        private static readonly Type _baseExceptionType = typeof(Exception);
         private static Action<IErrorditeConfiguration> _configurationAugmenter = c => { };
         private static bool _configurationAugmented;
         private static IErrorditeConfiguration _configuration;
+
+        public const string ErrorditeLogMessagesHttpContextKey = "errordite-logmessages-httpcontext-key";
+        public static bool Debug { get; set; }
 
         /// <summary>
         /// If you want to augment Errordite configuration using code rather than just rely
@@ -80,11 +82,19 @@ namespace Errordite.Client
 
             try
             {
+                Trace("New exception raised: type:={0}, async:={1}", exception.GetType().FullName, async);
+
                 if (ShouldReportException(exception))
                 {
+                    Trace("...reporting exception to Errordite");
+
                     exception = UnwrapException(exception);
 
+                    Trace("...Unwrapped exception");
+
                     var clientError = GetClientError(exception);
+
+                    Trace("...Got client error, posting to Errordite");
 
                     PostToErrordite(clientError, async);
                 }
@@ -113,6 +123,8 @@ namespace Errordite.Client
         {
             try
             {
+                Trace("...Sending exception to:={0}", configuration.Endpoint);
+
                 ErrorditeWebRequest.To(configuration.Endpoint)
                     .WithError(error)
                     .TimeoutIn(60)
@@ -120,6 +132,8 @@ namespace Errordite.Client
             }
             catch (Exception ex)
             {
+                Trace("...Failed to post to Errordite, ", error);
+
                 try
                 {
                     if (_exceptionNotificationAction != null)
@@ -260,7 +274,7 @@ namespace Errordite.Client
             var exceptionTypeHierarchy = new List<string>();
             var exceptionType = exception.GetType();
 
-            while (exceptionType != null && exceptionType.IsAssignableFrom(BaseExceptionType))
+            while (exceptionType != null && exceptionType.IsAssignableFrom(_baseExceptionType))
             {
                 exceptionTypeHierarchy.Add(exceptionType.FullName);
                 exceptionType = exceptionType.BaseType;
@@ -275,6 +289,12 @@ namespace Errordite.Client
             }
 
             return true;
+        }
+
+        private static void Trace(string message, params object[] args)
+        {
+            if(Debug)
+                System.Diagnostics.Trace.Write(string.Format("Errordite: {0}", string.Format(message, args)));
         }
     }
 }
