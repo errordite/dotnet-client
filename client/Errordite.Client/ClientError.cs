@@ -11,6 +11,7 @@ namespace Errordite.Client
         public string Url { get; set; }
         public string UserAgent { get; set; }
         public string Version { get; set; }
+        public ErrorData ContextData { get; set; }
         public List<LogMessage> Messages { get; set; }
         public DateTime TimestampUtc { get; set; }
         public ExceptionInfo ExceptionInfo { get; set; }
@@ -36,7 +37,7 @@ namespace Errordite.Client
     }
 
 #if NET2
-    
+
     /// <summary>
     /// .net v2 version of custom ErrorData; the standard XmlSerializer can't
     /// serialize dictionaries and the JSONSerializer doesn't exist so we resort 
@@ -54,8 +55,12 @@ namespace Errordite.Client
         {
             AddRange(errorData);
         }
+
+        public bool ContainsKey(string key)
+        {
+            return Find(delegate(ErrorDataItem item) { return item.Key == key; }) != null;
+        }
     }
-    
 #else
     [Serializable]
     public class ErrorData : Dictionary<string, string>

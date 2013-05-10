@@ -1,12 +1,11 @@
-﻿using Errordite.Client.Configuration;
-
+﻿
 namespace Errordite.Client.DataCollectors
 {
     using System;
 
-    public class ScopedDataCollector 
+    internal class ScopedDataCollector 
     {
-        public ErrorData Collect(Exception e, IErrorditeConfiguration configuration)
+        public ErrorData Collect(Exception e)
         {
             if (ErrorditeScope.Data == null)
                 return null;

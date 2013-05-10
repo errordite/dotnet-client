@@ -1,6 +1,4 @@
-﻿
-using System.Collections.Generic;
-using Errordite.Client.Configuration;
+﻿using Errordite.Client.Configuration;
 
 namespace Errordite.Client.DataCollectors
 {
@@ -22,7 +20,20 @@ namespace Errordite.Client.DataCollectors
         protected void AddIfNotEmpty(string key, string value, ErrorData data)
         {
             if (!string.IsNullOrEmpty(value))
+            {
+                //make sure we dont get duplicate keys
+                if (data.ContainsKey(key))
+                {
+                    int index = 1;
+                    while (data.ContainsKey(key))
+                    {
+                        key = string.Format("{0}-{1}", key, index);
+                        index++;
+                    }
+                }   
+                
                 data.Add(key, value);
+            }   
         }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Web;
 using Errordite.Client.Configuration;
 using Errordite.Client.Interfaces;
@@ -49,6 +48,11 @@ namespace Errordite.Client.DataCollectors
             }
 
             return data;
+        }
+
+        public ErrorData Collect(Exception e)
+        {
+            return null;
         }
     }
 }

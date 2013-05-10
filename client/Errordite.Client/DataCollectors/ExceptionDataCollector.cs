@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using Errordite.Client.Configuration;
 
 namespace Errordite.Client.DataCollectors
@@ -20,7 +19,7 @@ namespace Errordite.Client.DataCollectors
             foreach (var key in exception.Data.Keys)
             {
                 AddIfNotEmpty(
-                    string.Format("Exception.{0}", key),
+                    string.Format("{0}", key),
                     Sanitise(configuration, key.ToString(), exception.Data[key].ToString()),
                     data);
             }
