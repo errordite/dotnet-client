@@ -18,7 +18,8 @@ namespace Errordite.Client
     /// </summary>
     public static class ErrorditeClient
     {
-        private static Action<Exception> _exceptionNotificationAction = e => System.Diagnostics.Trace.Write(e.ToString());
+		private static Action<Exception> _exceptionNotificationAction = e => System.Diagnostics.Trace.Write(e.ToString());
+		private static Action<Exception> _preReportAction = null;
         private static readonly Type _baseExceptionType = typeof(Exception);
         private static Action<IErrorditeConfiguration> _configurationAugmenter = c => { };
         private static bool _configurationAugmented;
@@ -62,6 +63,11 @@ namespace Errordite.Client
         {
             _exceptionNotificationAction = errorNotificationAction;
         }
+
+		public static void SetPreReportAction(Action<Exception> preReportAction)
+		{
+			_preReportAction = preReportAction;
+		}
  
         public static void ReportException(Exception exception)
         {
@@ -92,6 +98,18 @@ namespace Errordite.Client
 
                 if (ShouldReportException(exception))
                 {
+					if (_preReportAction != null)
+					{
+						try
+						{
+							_preReportAction(exception);
+						}
+						catch(Exception e)
+						{
+							Trace(string.Format("Pre report action failed:={0}", e.Message));
+						}
+					}
+
                     Trace("...reporting exception to Errordite");
 
                     exception = UnwrapException(exception);
