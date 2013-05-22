@@ -18,10 +18,7 @@ namespace Errordite.Client.DataCollectors
 
             foreach (var key in exception.Data.Keys)
             {
-                AddIfNotEmpty(
-                    string.Format("{0}", key),
-                    Sanitise(configuration, key.ToString(), exception.Data[key].ToString()),
-                    data);
+                AddIfNotEmpty(string.Format("Exception.{0}", key), Sanitise(configuration, key.ToString(), exception.Data[key].ToString()), data);
             }
 
             return data;

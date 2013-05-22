@@ -19,7 +19,7 @@ namespace Errordite.Client
     public static class ErrorditeClient
     {
 		private static Action<Exception> _exceptionNotificationAction = e => System.Diagnostics.Trace.Write(e.ToString());
-		private static Action<Exception> _preReportAction = null;
+		private static Action<Exception> _preReportAction;
         private static readonly Type _baseExceptionType = typeof(Exception);
         private static Action<IErrorditeConfiguration> _configurationAugmenter = c => { };
         private static bool _configurationAugmented;
@@ -216,7 +216,7 @@ namespace Errordite.Client
             return exceptionData ?? new ErrorData();
         }
 
-        private static ErrorData GetCustomData(Exception exception, IDictionary<string, string> customData)
+        private static ErrorData GetCustomData(Exception exception, IEnumerable<KeyValuePair<string, string>> customData)
         {
             var items = new ErrorData();
 
