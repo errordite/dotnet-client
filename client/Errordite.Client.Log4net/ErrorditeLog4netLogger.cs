@@ -95,7 +95,7 @@ namespace Errordite.Client.Log4net
         {
             _messages.Add(new LogMessage
             {
-                Message = e.LoggingEvent.RenderedMessage,
+                Message = string.Format("{0}: {1}", e.LoggingEvent.LoggerName, e.LoggingEvent.RenderedMessage),
                 TimestampUtc = DateTime.UtcNow
             });
         }
